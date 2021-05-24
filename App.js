@@ -22,6 +22,11 @@ class VideoPlayer extends Component {
     PIP.configureAspectRatio(4, 3);
     PIP.enableAutoPipSwitch();
     PIP.addEventListener('pipActivityState', state => {
+      if (state.state) {
+        this.setState(prevState => ({
+          paused: !prevState.paused,
+        }));
+      }
       console.log('state', state);
     });
   }
@@ -39,8 +44,9 @@ class VideoPlayer extends Component {
               uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
               type: 'mp4',
             }}
+            paused={this.state.paused}
             playInBackground={true}
-          controls={true}  
+            controls={true}
             // source={require('./broadchurch.mp4')}
             style={styles.fullScreen}
           />
