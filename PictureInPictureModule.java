@@ -3,8 +3,10 @@ package com.reactlibrarypip;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.RemoteAction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Icon;
@@ -54,10 +56,10 @@ public class PictureInPictureModule extends ReactContextBaseJavaModule implement
     private int REQUEST_INFO = 3;
 
     /** The intent extra value for play action.  */
-    private int CONTROL_TYPE_PLAY = 1;
+    private final int CONTROL_TYPE_PLAY = 1;
 
     /** The intent extra value for pause action.  */
-    private int CONTROL_TYPE_PAUSE = 2;
+    private final int CONTROL_TYPE_PAUSE = 2;
 
     PictureInPictureParams.Builder params;
 
@@ -91,7 +93,12 @@ public class PictureInPictureModule extends ReactContextBaseJavaModule implement
     public void start() {
         params = new PictureInPictureParams.Builder();
          if (isPipSupported) {
+             /**
+              * This method must be removed
+              */
+             changeIconToPlay();
             if (isCustomAspectRatioSupported) {
+                getReactApplicationContext().registerReceiver(mReceiver, new IntentFilter(ACTION_MEDIA_CONTROL));
                 params.setAspectRatio(this.aspectRatio);
                 getCurrentActivity().enterPictureInPictureMode(params.build());
             } else
@@ -106,6 +113,22 @@ public class PictureInPictureModule extends ReactContextBaseJavaModule implement
         //     String text = "Your device is not supported";
         //     Toast.makeText(context, text, Toast.LENGTH_LONG).show();
         // }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @ReactMethod
+    public void changeIconToPlay()
+    {
+        updatePictureInPictureActions(R.drawable.ic_play_arrow_24dp,"Play",
+                CONTROL_TYPE_PLAY,REQUEST_PLAY);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @ReactMethod
+    public void changeIconToPause()
+    {
+        updatePictureInPictureActions(R.drawable.ic_pause_24dp,"Pause",
+                CONTROL_TYPE_PAUSE,REQUEST_PAUSE);
     }
 
     /**
@@ -139,6 +162,26 @@ public class PictureInPictureModule extends ReactContextBaseJavaModule implement
         params.setActions(actions).build();
 
     }
+
+    /** A [BroadcastReceiver] to receive action item events from Picture-in-Picture mode.  */
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                if (!intent.getAction().equals(ACTION_MEDIA_CONTROL)) {
+                    return;
+                }
+
+                // This is where we are called back from Picture-in-Picture action items.
+                switch (intent.getIntExtra(EXTRA_CONTROL_TYPE, 0)) {
+                    case CONTROL_TYPE_PLAY: Toast.makeText(context,"Play",Toast.LENGTH_SHORT).show();
+                    break;
+                    case CONTROL_TYPE_PAUSE:Toast.makeText(context,"Pause",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
+
 
     public boolean hasSystemFeature (String featureName){
 //        FeatureInfo.getSystemAvailableFeatures();
@@ -176,7 +219,11 @@ public class PictureInPictureModule extends ReactContextBaseJavaModule implement
 
     @Override
     public void onHostDestroy() {
+        getReactApplicationContext().unregisterReceiver(mReceiver);
     }
 
+
+
 }
+
 
