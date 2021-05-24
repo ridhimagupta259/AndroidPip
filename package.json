@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "17.0.1",
     "react-native": "0.64.1",
-    "react-native-picture-in-picture": "git+https://github.com/ridhimagupta259/react-native-picture-in-picture.git",
+    "react-native-picture-in-picture": "git+https://github.com/ridhimagupta259/react-native-picture-in-picture.git#pipEventListener",
     "react-native-video": "git+https://github.com/Shashank2406/react-native-video.git"
   },
   "devDependencies": {

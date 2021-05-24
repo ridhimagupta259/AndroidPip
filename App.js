@@ -11,14 +11,19 @@ import {
 } from 'react-native';
 
 import Video from 'react-native-video';
-import PictureInPicture from 'react-native-picture-in-picture';
+import PIP from 'react-native-picture-in-picture';
 
 class VideoPlayer extends Component {
-  state = {};
+  state = {
+    paused: false,
+  };
 
-  componentDidMount(){
-    PictureInPicture.configureAspectRatio(4, 3);
-            PictureInPicture.enableAutoPipSwitch();
+  componentDidMount() {
+    PIP.configureAspectRatio(4, 3);
+    PIP.enableAutoPipSwitch();
+    PIP.addEventListener('pipActivityState', state => {
+      console.log('state', state);
+    });
   }
   render() {
     return (
@@ -26,7 +31,7 @@ class VideoPlayer extends Component {
         <TouchableOpacity
           style={styles.fullScreen}
           onPress={() => {
-            
+            //PIP.isInPictureInPictureMode();
           }}>
           <Video
             /* For ExoPlayer */
@@ -34,7 +39,6 @@ class VideoPlayer extends Component {
               uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
               type: 'mp4',
             }}
-            
             playInBackground={true}
           controls={true}  
             // source={require('./broadchurch.mp4')}
