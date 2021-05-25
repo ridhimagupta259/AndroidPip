@@ -21,26 +21,31 @@ class VideoPlayer extends Component {
   componentDidMount() {
     PIP.configureAspectRatio(4, 3);
     PIP.enableAutoPipSwitch();
-    console.log("Value of paused inside componentDidMount = ",this.state.paused);
     PIP.updatePlayerState(this.state.paused)
+    console.log("Value of paused inside componentDidMount = ",this.state.paused);
     PIP.addEventListener('pipActivityState', state => {
-      if (state.state) {
-        this.setState(prevState => ({
-          paused: !prevState.paused,
-        }));
-      }
-      console.log('state', state);
+    
+        this.setState({
+          paused : !state.state
+        })
+
+        console.log("This is inside listener",this.state.paused)
+        PIP.updatePlayerState(this.state.paused);
+    
+      
+      
     });
   }
   render() {
+    console.log("Inside render",this.state.paused);
     return (
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.fullScreen}
           onPress={() => { 
-            this.setState({paused: !this.state.paused});
-            console.log("Value of paused being sent into updatePlayerState = ",!this.state.paused);
-            PIP.updatePlayerState(!this.state.paused)
+            // this.setState({paused: !this.state.paused});
+            // console.log("Value of paused being sent into updatePlayerState = ",!this.state.paused);
+            // PIP.updatePlayerState(!this.state.paused)
 
             //PIP.isInPictureInPictureMode();
           }}>
@@ -52,7 +57,7 @@ class VideoPlayer extends Component {
             }}
             paused={this.state.paused}
             playInBackground={true}
-            controls={true}
+            // controls={true}
             // source={require('./broadchurch.mp4')}
             style={styles.fullScreen}
           />

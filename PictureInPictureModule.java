@@ -73,7 +73,7 @@ public class PictureInPictureModule extends ReactContextBaseJavaModule implement
      */
     private final int CONTROL_TYPE_PAUSE = 2;
 
-    PictureInPictureParams.Builder params;
+    PictureInPictureParams.Builder params = new PictureInPictureParams.Builder();
 
     public PictureInPictureModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -126,8 +126,6 @@ public class PictureInPictureModule extends ReactContextBaseJavaModule implement
     @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
     public void updatePlayerState(boolean isPaused) {
-        if (params == null)
-            params = new PictureInPictureParams.Builder();
 
         isPlaying = !isPaused;
         if (isPlaying) changeIconToPause();
@@ -163,8 +161,8 @@ public class PictureInPictureModule extends ReactContextBaseJavaModule implement
         actions.add(new RemoteAction(Icon.createWithResource(reactContext,
                 iconResource)
                 , title, "Info about the video", intent));
-        params.setActions(actions).build();
-
+        params.setActions(actions);
+        getCurrentActivity().setPictureInPictureParams(params.build());
     }
 
     /**
