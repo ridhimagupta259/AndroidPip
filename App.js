@@ -21,6 +21,8 @@ class VideoPlayer extends Component {
   componentDidMount() {
     PIP.configureAspectRatio(4, 3);
     PIP.enableAutoPipSwitch();
+    console.log("Value of paused inside componentDidMount = ",this.state.paused);
+    PIP.updatePlayerState(this.state.paused)
     PIP.addEventListener('pipActivityState', state => {
       if (state.state) {
         this.setState(prevState => ({
@@ -35,7 +37,11 @@ class VideoPlayer extends Component {
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.fullScreen}
-          onPress={() => {
+          onPress={() => { 
+            this.setState({paused: !this.state.paused});
+            console.log("Value of paused being sent into updatePlayerState = ",!this.state.paused);
+            PIP.updatePlayerState(!this.state.paused)
+
             //PIP.isInPictureInPictureMode();
           }}>
           <Video
